@@ -1,8 +1,9 @@
 import dotenv from "dotenv"
 import dbconnect from "./db/dbconnection.js"
+import {app} from "./app.js"
 
 dotenv.config({
-    path:'./env'
+    path:'./.env'
 })
 
 dbconnect()
@@ -14,25 +15,3 @@ dbconnect()
 .catch((error) => {
     console.log(`error while cooncting to the server`, error)
 })
-
-
-
-// const app = express()
-
-// ( async () => {
-//     try {
-//         await mongoose.connect(`${MONGO_URL}/${DB_NAME}`)
-//         app.on("apperror", () => {
-//             console.log("this is a app errr", apperror)
-//             throw error
-//         })
-
-//         app.listen(process.env.PORT, () => {
-//             console.log(`app listening on port ${process.env.PORT}`);
-//         })
-//     }
-//     catch(error) {
-//         console.log("error", error)
-//         throw err
-//     }
-// })()

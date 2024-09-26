@@ -7,8 +7,6 @@ import { Apiresponse } from "../utils/apiresponse.js";
 const registerUser = asyncHandler(async (req,res) => {
     
     const {fullname, email, username, password} = req.body
-    console.log("email", email);
-    console.log("password", password);
 
     if(
         [fullname,email,username,password].some((field) => field.trim() == "")
@@ -16,7 +14,7 @@ const registerUser = asyncHandler(async (req,res) => {
         throw new ApiError(400, "All fields are required")
     }
 
-    const existeduser = User.findOne({
+    const existeduser = await User.findOne({
         $or: [{ username },{ email }]
     })
 
@@ -26,6 +24,7 @@ const registerUser = asyncHandler(async (req,res) => {
     
     const avatarLocalPath = req.files.avatar[0]?.path;
     const coverImageLocalPath = req.files.coverImage[0]?.path;
+    console.log(req.files)
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required")

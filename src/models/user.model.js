@@ -18,7 +18,7 @@ const userSchema = new Schema(
             lowercase: true,
             unique: true,
             trim: true
-        },
+        }, 
         fullname: {
             type: String,
             required: true,
@@ -27,7 +27,7 @@ const userSchema = new Schema(
         },
         avatar: {
             type: String,   //cloudinary url
-            required: true,
+            // required: true,
         },
         coverImage: {
          type: String //cloudinary url
@@ -64,7 +64,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 }
 
 userSchema.methods.generateAccessToken = function(){
-    jwt.sign(
+    return jwt.sign(
         {
             _id: this._id,
             email: this.email,
@@ -78,7 +78,7 @@ userSchema.methods.generateAccessToken = function(){
     )
 }
 userSchema.methods.generateRefreshToken = function(){
-    jwt.sign(
+     return jwt.sign(
         {
             _id: this._id,
         },

@@ -11,9 +11,6 @@ const genRefandAccToken = async (userId) => {
     const accessToken = await byIduser.generateAccessToken()
     const refreshToken = await byIduser.generateRefreshToken()
 
-    console.log("this is the accessToken: ", accessToken)
-    console.log("this is the refreshToken: ", refreshToken)
-
     byIduser.refreshToken = refreshToken
     byIduser.save({ validateBeforeSave: false })
 
@@ -109,7 +106,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!truePass) {
         throw new ApiError(400, "your password is incorrect")
     }
-
+    console.log(regUser._id)
     const { accessToken, refreshToken } = await genRefandAccToken(regUser._id)
 
     const regUser1 = await User.findOne(regUser._id).select(

@@ -2,6 +2,7 @@ import { ApiError } from "../utils/apiErrors.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { NewUser } from "../models/registeration.model.js";
 
 const verifyjwt = asyncHandler(async (req, res, next) => {
     try {
@@ -13,7 +14,7 @@ const verifyjwt = asyncHandler(async (req, res, next) => {
     
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
     
-        const existedUser = await User.findById(decodedToken._id).select("-password -refreshToken")
+        const existedUser = await NewUser.findById(decodedToken._id).select("-password -refreshToken")
     
         if(!existedUser) {
             throw new ApiError(400, "invalid access Token")

@@ -1,21 +1,66 @@
-import {asyncHandler} from "../utils/asyncHandler.js"
-import {NewUser} from "../models/registeration.model.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { admin } from "../models/admin.model.js"
 import { ApiError } from "../utils/apiErrors.js"
 import { Apiresponse } from "../utils/apiresponse.js"
-import { creatingAccount } from "../utils/creating.users.js"
+import { superFran } from "../models/superfranchisee.model.js"
+import { franch } from "../models/franchisee.model.js"
+import { subfranch } from "../models/subfranchisee.model.js"
 
 //generating refresh and accessToken
-const generatingrefreshandaccessToken = async function (userId) {
-    const Auser = await NewUser.findById(userId)
+const generatingrefreshandaccessToken = async function (user) {
 
-    const accessToken = await Auser.generateAccessToken()
-    const refreshToken = await Auser.generateRefreshToken()
+    const accessToken = await user.generateAccessToken()
+    const refreshToken = await user.generateRefreshToken()
 
-    Auser.refreshToken = refreshToken
-    await Auser.save({validateBeforeSave: false})
+    user.refreshToken = refreshToken
+    await user.save({ validateBeforeSave: false })
 
-    return {accessToken, refreshToken}
+    return { accessToken, refreshToken }
 }
+
+// admin registeration
+const adminregisteration = asyncHandler(async (req, res) => {
+
+    let { fullname, email, username, password, state, city, role } = req.body
+
+    if (role !== "admin") {
+        role = "admin"
+    }
+
+    if (!(fullname || email || username || password)) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    // checking if user already existed
+    const alreadyExistedUser = await admin.findOne({
+        $or: [
+            { email },
+            { username }
+        ]
+    })
+
+    if (alreadyExistedUser) {
+        throw new ApiError(400, "user allready exists")
+    }
+
+    const createdUser = await admin.create({
+        fullname,
+        username,
+        email,
+        password,
+        role,
+        state,
+        city
+    })
+
+    const createdUserObject = await admin.findById(createdUser._id).select("-password -refreshToken")
+
+    return res.status(200)
+        .json(
+            new Apiresponse(200, { user: createdUserObject }, "user created successfully")
+        )
+
+})
 
 // superFranchiseeRegistration a user or admin
 const superFranchiseeRegistration = asyncHandler(async (req, res) => {
@@ -26,30 +71,84 @@ const superFranchiseeRegistration = asyncHandler(async (req, res) => {
         role = "superfranchisee"
     }
 
-    const createdUserObject = await creatingAccount(fullname, email, username, password, state, city, franchisee_name, role)
+    if (!(fullname || email || username || password)) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    // checking if user already existed
+    const alreadyExistedUser = await superFran.findOne({
+        $or: [
+            { email },
+            { username }
+        ]
+    })
+
+    if (alreadyExistedUser) {
+        throw new ApiError(400, "user allready exists")
+    }
+
+    const createdUser = await superFran.create({
+        fullname,
+        username,
+        email,
+        password,
+        role,
+        state,
+        city,
+        franchisee_name
+    })
+
+    const createdUserObject = await superFran.findById(createdUser._id).select("-password -refreshToken")
 
     return res.status(200)
-    .json(
-        new Apiresponse(200, {user: createdUserObject}, "user created successfully")
-    )
+        .json(
+            new Apiresponse(200, { user: createdUserObject }, "user created successfully")
+        )
 
 })
 
 // subfranchisee registeration 
 const subFranchiseeRegistration = asyncHandler(async (req, res) => {
 
-    let { fullname, email, username, password, state, city, francisee_name, role } = req.body
+    let { fullname, email, username, password, state, city, franchisee_name, role } = req.body
 
     if (role !== "subfranchisee") {
         role = "subfranchisee"
     }
 
-    const createdUserObject = await creatingAccount(fullname, email, username, password, state, city, franchisee_name, role)
+    if (!(fullname || email || username || password)) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    // checking if user already existed
+    const alreadyExistedUser = await subfranch.findOne({
+        $or: [
+            { email },
+            { username }
+        ]
+    })
+
+    if (alreadyExistedUser) {
+        throw new ApiError(400, "user allready exists")
+    }
+
+    const createdUser = await subfranch.create({
+        fullname,
+        username,
+        email,
+        password,
+        role,
+        state,
+        city,
+        franchisee_name
+    })
+
+    const createdUserObject = await subfranch.findById(createdUser._id).select("-password -refreshToken")
 
     return res.status(200)
-    .json(
-        new Apiresponse(200, {user: createdUserObject}, "user created successfully")
-    )
+        .json(
+            new Apiresponse(200, { user: createdUserObject }, "user created successfully")
+        )
 
 })
 
@@ -62,11 +161,39 @@ const FranchiseeRegistration = asyncHandler(async (req, res) => {
         role = "franchisee"
     }
 
-    const createdUserObject = await creatingAccount(fullname, email, username, password, state, city, franchisee_name, role)
+    if (!(fullname || email || username || password)) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    // checking if user already existed
+    const alreadyExistedUser = await franch.findOne({
+        $or: [
+            { email },
+            { username }
+        ]
+    })
+
+    if (alreadyExistedUser) {
+        throw new ApiError(400, "user allready exists")
+    }
+
+    const createdUser = await franch.create({
+        fullname,
+        username,
+        email,
+        password,
+        role,
+        state,
+        city,
+        franchisee_name
+    })
+
+    const createdUserObject = await franch.findById(createdUser._id).select("-password -refreshToken")
+
     return res.status(200)
-    .json(
-        new Apiresponse(200, {user: createdUserObject}, "user created successfully")
-    )
+        .json(
+            new Apiresponse(200, { user: createdUserObject }, "user created successfully")
+        )
 })
 
 // for user login 
@@ -78,32 +205,121 @@ const isUserlogin = asyncHandler(async (req, res) => {
         throw new ApiError(400, "username or email is required")
     }
 
-    const regUser = await NewUser.findOne({
+    // finding in admin collection
+    const regUser = await admin.findOne({
         $or: [
             { username: username },
             { email: email }
         ]
     })
 
-    if (!regUser) {
-        throw new ApiError(400, `user with email or username not registered`)
+    // finding in superfranchisee collection
+    const supRegUser = await superFran.findOne({
+        $or: [
+            { username: username },
+            { email: email }
+        ]
+    })
+
+    // finding in franchisee collection
+    const franchRegUser = await franch.findOne({
+        $or: [
+            { username: username },
+            { email: email }
+        ]
+    })
+
+    // finding in subfranchisee collection
+    const subfranchRegUser = await subfranch.findOne({
+        $or: [
+            { username: username },
+            { email: email }
+        ]
+    })
+
+    if (!(regUser || supRegUser || franchRegUser || subfranchRegUser)) {
+        throw new ApiError(400, "user not found")
     }
 
-    let truePass = await regUser.isPasswordCorrect(password)
+    let regUser1;
+    let accessToken, refreshToken;
 
-    if (!truePass) {
-        throw new ApiError(400, "your password is incorrect")
+    // processing when user is admin
+    if (regUser) {
+        let truePass = await regUser.isPasswordCorrect(password)
+
+        if (!truePass) {
+            throw new ApiError(400, "your password is incorrect")
+        }
+
+        let tokens = await generatingrefreshandaccessToken(regUser)
+
+        accessToken = tokens.accessToken;
+        refreshToken = tokens.refreshToken;
+
+        regUser1 = await admin.findOne(regUser._id).select(
+            "-password -refreshToken")
     }
 
-    const { accessToken, refreshToken } = await generatingrefreshandaccessToken(regUser._id)
+    // processing when user is superFranchisee
+    if (supRegUser) {
+        let truePass = await supRegUser.isPasswordCorrect(password)
 
-    const regUser1 = await NewUser.findOne(regUser._id).select(
-        "-password -refreshToken")
+        if (!truePass) {
+            throw new ApiError(400, "your password is incorrect")
+        }
+
+        let tokens = await generatingrefreshandaccessToken(supRegUser)
+
+        accessToken = tokens.accessToken;
+        refreshToken = tokens.refreshToken;
+
+        regUser1 = await superFran.findOne(supRegUser._id).select(
+            "-password -refreshToken")
+    }
+
+    // processing when user is Franchisee
+    if (franchRegUser) {
+        let truePass = await franchRegUser.isPasswordCorrect(password)
+
+        if (!truePass) {
+            throw new ApiError(400, "your password is incorrect")
+        }
+
+        let tokens = await generatingrefreshandaccessToken(franchRegUser)
+
+        accessToken = tokens.accessToken;
+        refreshToken = tokens.refreshToken;
+
+        regUser1 = await franch.findOne(franchRegUser._id).select(
+            "-password -refreshToken")
+    }
+
+    // processing when user is subFranchisee
+    if (subfranchRegUser) {
+        let truePass = await subfranch.isPasswordCorrect(password)
+
+        if (!truePass) {
+            throw new ApiError(400, "your password is incorrect")
+        }
+
+        let tokens = await generatingrefreshandaccessToken(subfranchRegUser)
+
+        accessToken = tokens.accessToken;
+        refreshToken = tokens.refreshToken;
+
+        regUser1 = await subfranch.findOne(subfranchRegUser._id).select(
+            "-password -refreshToken")
+    }
 
     const options = {
         httpOnly: true,
-        secure: true
+       secure: true,
+        // sameSite: 'Lax',  // Use 'None' for cross-site requests, and ensure secure is true
+        // maxAge: 60 * 60 * 1000,
     }
+
+    req.cookies = {accessToken, refreshToken}
 
     return res.status(200)
         .cookie("accessToken", accessToken, options)
@@ -112,7 +328,8 @@ const isUserlogin = asyncHandler(async (req, res) => {
             new Apiresponse(
                 200,
                 {
-                    user: regUser1, accessToken, refreshToken
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
                 },
                 "user login successfully"
             )
@@ -120,4 +337,12 @@ const isUserlogin = asyncHandler(async (req, res) => {
 
 })
 
-export {superFranchiseeRegistration, subFranchiseeRegistration, FranchiseeRegistration, isUserlogin}
+//export { adminregisteration, superFranchiseeRegistration, subFranchiseeRegistration, FranchiseeRegistration, isUserlogin }
+
+export {
+    adminregisteration,
+    isUserlogin,
+    superFranchiseeRegistration,
+    FranchiseeRegistration,
+    subFranchiseeRegistration
+}

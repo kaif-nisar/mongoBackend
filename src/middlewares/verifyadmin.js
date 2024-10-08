@@ -3,7 +3,7 @@ import { ApiError } from "../utils/apiErrors.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const verifyAdmin = asyncHandler(async (req,res,next) => {
-    if(!(['admin','superfranchisee','subfranchisee'].includes(req.existedUser.role))) {
+    if(!(['admin','superfranchisee','franchisee'].includes(req.existedUser.role))) {
         throw new ApiError(400, "you are not eligible for registering user")
     } 
     else if(req.existedUser.role == "admin") {
@@ -12,7 +12,7 @@ const verifyAdmin = asyncHandler(async (req,res,next) => {
     else if(req.existedUser.role == "superfranchisee") {
         next();
     }
-    else if(req.existedUser.role == "subfranchisee") {
+    else if(req.existedUser.role == "franchisee") {
         next();
     }
     else{

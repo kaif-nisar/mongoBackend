@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Test Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            padding: 10px;
+            background-color: #ff6961;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .test-table th,
+        .test-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .test-table th {
+            background-color: #ffcc5c;
+            color: #333;
+        }
+
+        .test-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .test-table tr:hover {
+            background-color: #eaf4ff;
+        }
+
+        .status-normal {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .status-abnormal {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #ff6961;
+            color: white;
+            margin-top: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .responsive-table {
+            overflow-x: auto;
+        }
+
+        tr {
+            transition: all 0.5s ease-in;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Blood Test Report</h1>
+    </header>
+
+    <div class="container">
+        <h2>Patient: John Doe</h2>
+        <p>Date: 5th October, 2024</p>
+
+        <div class="responsive-table">
+            <table class="test-table">
+                <thead>
+                    <tr>
+                        <th>ORDER</th>
+                        <th>Name</th>
+                        <th>SHORT NAME</th>
+                        <th>CATEGORY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- for dynamic data  -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Blood Test Center</p>
+    </footer>
+    <script>
+
+        async function dynamicData() {
+            try {
+
+                function getCookieValue(cookieName) {
+                    const name = cookieName + "=";
+                    const decodedCookie = decodeURIComponent(document.cookie);
+                    const cookieArray = decodedCookie.split(';');
+
+                    for (let i = 0; i < cookieArray.length; i++) {
+                        let cookie = cookieArray[i].trim();
+                        if (cookie.indexOf(name) === 0) {
+                            return cookie.substring(name.length, cookie.length);
+                        }
+                    }
+                    return null; // Return null if the cookie is not found
+                }
+
+                const cookies = getCookieValue('accessToken');
+                // console.log(cookies)
+
+                // const cookies = document.cookie.accessToken;
+                // console.log(document.cookie)
+
+                let response = await fetch("http://localhost:8000/api/v1/users/test-database", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cookie': cookies
+                    },
+                    body: JSON.stringify({ cookies }),
+                    credentials: 'include'
+                })
+
+                if (!response.ok) {
+                    throw new Error("!server did not respose");
+                }
+
+                console.log(response);
+
+                const data = await response.json();
+                console.log(data);
+                forTableData(data);
+            }
+            catch (error) {
+                throw new Error("something went wrong while fetching data", error)
+            }
+        }
+
+        function forTableData(data) {
+            let tableBody = document.querySelector('tbody');
+            let orderterm = 0;
+
+            data.forEach(function (doc) {
+                let row = document.createElement('tr');
+                orderterm++;
+
+                let orderId = document.createElement('td');
+                orderId.textContent = orderterm;
+                row.appendChild(orderId);
+
+                let name = document.createElement('td');
+                name.textContent = doc.Name;
+                row.appendChild(name);
+
+                let shortName = document.createElement('td');
+                shortName.textContent = doc.Short_name;
+                row.appendChild(shortName);
+
+                let categoryCol = document.createElement('td');
+                categoryCol.textContent = doc.category;
+                row.appendChild(categoryCol);
+
+                tableBody.appendChild(row);
+            })
+
+        }
+
+        dynamicData();
+    </script>
+</body>
+
+</html>

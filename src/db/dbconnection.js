@@ -9,6 +9,7 @@ let dbconnect = async () => {
     try {
         const connectioninstance = await mongoose.connect(`${process.env.MONGO_URL}/${DB_NAME}`)
         console.log(`database connection successfull at port ${connectioninstance.connection.host}`);
+        return connectioninstance
     }
     catch(error) {
         console.log(error)

@@ -3,14 +3,8 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 
-const registerationSchema = new Schema({
-    //fullname
-    //email
-    //username
-    //password
-    //state
-    //franchisee name
-    //city
+const adminSchema = new Schema({
+    
         fullname: {
             type: String,
             required: true,
@@ -38,18 +32,13 @@ const registerationSchema = new Schema({
         city: {
             type: String
         },
-        francisee_name: {
-            type: String
-        },
         role: {
             type: String,
-            enum: ['admin', 'superfranchisee', 'subfranchisee', 'franchisee'],
-            default: "user"
         },
-        createdBy: {
-            type: Schema.Types.ObjectId,
-            ref: 'NewUser',  // Reference to the user who created this user
-        },
+        // createdBy: {
+        //     type: Schema.Types.ObjectId,
+        //     ref: 'NewUser',  // Reference to the user who created this user
+        // },
         refreshToken: {
             type: String,
         }
@@ -59,7 +48,7 @@ const registerationSchema = new Schema({
     }
 )
 
-registerationSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
 
     if (!this.isModified("password")) return next();
 
@@ -67,7 +56,7 @@ registerationSchema.pre("save", async function (next) {
     next()
 })
 
-registerationSchema.methods.generateAccessToken = async function () {
+adminSchema.methods.generateAccessToken = async function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -82,11 +71,11 @@ registerationSchema.methods.generateAccessToken = async function () {
     )
 }
 
-registerationSchema.methods.isPasswordCorrect = async function (password) {
+adminSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-registerationSchema.methods.generateRefreshToken = async function () {
+adminSchema.methods.generateRefreshToken = async function () {
     return jwt.sign(
         {
             _id: this._id
@@ -98,4 +87,4 @@ registerationSchema.methods.generateRefreshToken = async function () {
     )
 }
 
-export const NewUser = mongoose.model("Allmembers", registerationSchema)
+export const admin = mongoose.model("admin", adminSchema)

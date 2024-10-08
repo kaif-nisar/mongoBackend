@@ -153,7 +153,7 @@ const subFranchiseeRegistration = asyncHandler(async (req, res) => {
 })
 
 //franchisee registeration
-const FranchiseeRegistration = asyncHandler(async (req, res) => {
+const FranchiseeRegistration = asyncHandler(async (err, req, res) => {
 
     let { fullname, email, username, password, state, city, franchisee_name, role } = req.body
 
@@ -319,7 +319,7 @@ const isUserlogin = asyncHandler(async (req, res) => {
         // maxAge: 60 * 60 * 1000,
     }
 
-    req.cookies = {accessToken, refreshToken}
+    // req.cookies = {accessToken, refreshToken}
 
     return res.status(200)
         .cookie("accessToken", accessToken, options)
@@ -332,6 +332,7 @@ const isUserlogin = asyncHandler(async (req, res) => {
                     refreshToken: refreshToken
                 },
                 "user login successfully"
+                // err.message
             )
         )
 

@@ -19,7 +19,7 @@ const TestSchema = new Schema({
     },
     category: {
         type: String,
-        required: true
+        // required: true
     },
     Price: {
         type: Number,

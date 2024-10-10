@@ -17,9 +17,9 @@ const addingTest = asyncHandler(async (req, res) => {
 
     const { Name, Short_name, category, Price, parameters } = req.body
 
-    if (!(req.existedUser.role == "admin")) {
-        throw new ApiError(400, "you are not the admin")
-    }
+    // if (!(req.existedUser.role == "admin")) {
+    //     throw new ApiError(400, "you are not the admin")
+    // }
 
     if (!(Array.isArray(parameters))) {
         throw new ApiError(400, "atleast one parameter is required")
@@ -40,9 +40,9 @@ const addingTest = asyncHandler(async (req, res) => {
     const testCreated = await testSchema.create({
         Name,
         Short_name,
-        category,
+        category: category || "",
         Price,
-        parameters
+        parameters: parameters || ""
     })
 
     return res.json({

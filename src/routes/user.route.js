@@ -40,13 +40,14 @@ router.route("/sub-franchisee-registration").post(verifyjwt, verifyAdmin, subFra
 
 // for adding new test
 router.route("/adding-test").post(verifyjwt, AdminForTest, addingTest)
+// router.route("/adding-test").post(addingTest)
 
 // for editing test details
 router.route("/edit-test/:testName/:ShortName").post(verifyjwt, AdminForTest, editTest)
 
 // for fetching all test data
-router.route("/test-database").post(verifyjwt, AdminForTest, allTest)
-// router.route("/test-database").post(verifyjwt, allTest)
+//router.route("/test-database").post(verifyjwt, AdminForTest, allTest)
+ router.route("/test-database").post(allTest)
 
 // for creating test categories
 router.route("/test-categories").post(verifyjwt, AdminForTest, testCate)
